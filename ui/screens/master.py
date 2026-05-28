@@ -128,17 +128,21 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
                     load_data(search_input.current.value)
             show_confirmation_dialog(page, "Hapus?", f"Hapus {p['nama']}?", _confirm, confirm_color=STATUS_RED)
 
-        layout = ft.Column([
-            ft.Row([
-                ft.TextField(ref=search_input, hint_text="Cari / Scan Barcode Produk", expand=True, on_change=lambda e: load_data(e.control.value)),
-                big_button("Tambah Produk", icon=ft.Icons.ADD, on_click=lambda e: open_form())
-            ]),
-            ft.Container(height=8),
-            ft.Container(
-                content=ft.Column(ref=product_list, spacing=0, scroll=ft.ScrollMode.AUTO),
-                expand=True, bgcolor=WHITE, border=ft.Border.all(1, MEDIUM_GRAY), border_radius=8
-            )
-        ], expand=True, padding=16)
+        layout = ft.Container(
+            content=ft.Column([
+                ft.Row([
+                    ft.TextField(ref=search_input, hint_text="Cari / Scan Barcode Produk", expand=True, on_change=lambda e: load_data(e.control.value)),
+                    big_button("Tambah Produk", icon=ft.Icons.ADD, on_click=lambda e: open_form())
+                ]),
+                ft.Container(height=8),
+                ft.Container(
+                    content=ft.Column(ref=product_list, spacing=0, scroll=ft.ScrollMode.AUTO),
+                    expand=True, bgcolor=WHITE, border=ft.Border.all(1, MEDIUM_GRAY), border_radius=8
+                )
+            ], expand=True),
+            expand=True,
+            padding=16
+        )
         
         load_data()
         return layout
@@ -220,17 +224,21 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
                 load_data(search_input.current.value)
             show_confirmation_dialog(page, "Hapus?", f"Hapus {p['nama']}?", _c, confirm_color=STATUS_RED)
 
-        layout = ft.Column([
-            ft.Row([
-                ft.TextField(ref=search_input, hint_text="Cari Sparepart...", expand=True, on_change=lambda e: load_data(e.control.value)),
-                big_button("Tambah Sparepart", icon=ft.Icons.ADD, on_click=lambda e: open_form())
-            ]),
-            ft.Container(height=8),
-            ft.Container(
-                content=ft.Column(ref=part_list, spacing=0, scroll=ft.ScrollMode.AUTO),
-                expand=True, bgcolor=WHITE, border=ft.Border.all(1, MEDIUM_GRAY), border_radius=8
-            )
-        ], expand=True, padding=16)
+        layout = ft.Container(
+            content=ft.Column([
+                ft.Row([
+                    ft.TextField(ref=search_input, hint_text="Cari Sparepart...", expand=True, on_change=lambda e: load_data(e.control.value)),
+                    big_button("Tambah Sparepart", icon=ft.Icons.ADD, on_click=lambda e: open_form())
+                ]),
+                ft.Container(height=8),
+                ft.Container(
+                    content=ft.Column(ref=part_list, spacing=0, scroll=ft.ScrollMode.AUTO),
+                    expand=True, bgcolor=WHITE, border=ft.Border.all(1, MEDIUM_GRAY), border_radius=8
+                )
+            ], expand=True),
+            expand=True,
+            padding=16
+        )
         load_data()
         return layout
 
@@ -305,17 +313,21 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
                 load_data(search_input.current.value)
             show_confirmation_dialog(page, "Hapus?", f"Hapus {p['nama']}?", _c, confirm_color=STATUS_RED)
 
-        layout = ft.Column([
-            ft.Row([
-                ft.TextField(ref=search_input, hint_text="Cari Pelanggan...", expand=True, on_change=lambda e: load_data(e.control.value)),
-                big_button("Tambah Pelanggan", icon=ft.Icons.ADD, on_click=lambda e: open_form())
-            ]),
-            ft.Container(height=8),
-            ft.Container(
-                content=ft.Column(ref=cust_list, spacing=0, scroll=ft.ScrollMode.AUTO),
-                expand=True, bgcolor=WHITE, border=ft.Border.all(1, MEDIUM_GRAY), border_radius=8
-            )
-        ], expand=True, padding=16)
+        layout = ft.Container(
+            content=ft.Column([
+                ft.Row([
+                    ft.TextField(ref=search_input, hint_text="Cari Pelanggan...", expand=True, on_change=lambda e: load_data(e.control.value)),
+                    big_button("Tambah Pelanggan", icon=ft.Icons.ADD, on_click=lambda e: open_form())
+                ]),
+                ft.Container(height=8),
+                ft.Container(
+                    content=ft.Column(ref=cust_list, spacing=0, scroll=ft.ScrollMode.AUTO),
+                    expand=True, bgcolor=WHITE, border=ft.Border.all(1, MEDIUM_GRAY), border_radius=8
+                )
+            ], expand=True),
+            expand=True,
+            padding=16
+        )
         load_data()
         return layout
 
