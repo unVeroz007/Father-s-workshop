@@ -26,6 +26,7 @@ from ui.screens.dashboard import build_dashboard_screen
 from ui.screens.kasir import build_kasir_screen
 from ui.screens.servis import build_servis_screen
 from ui.screens.laporan import build_laporan_screen
+from ui.screens.produk import build_produk_screen
 from ui.screens.settings import build_settings_screen
 
 
@@ -142,7 +143,8 @@ def main(page: ft.Page) -> None:
             1: lambda: build_kasir_screen(page, current_user),
             2: lambda: build_servis_screen(page, current_user),
             3: lambda: build_laporan_screen(page, current_user),
-            4: lambda: build_settings_screen(page, current_user),
+            4: lambda: build_produk_screen(page, current_user),
+            5: lambda: build_settings_screen(page, current_user),
         }
 
         builder = screen_builders.get(active_screen_index, screen_builders[0])

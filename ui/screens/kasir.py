@@ -73,7 +73,7 @@ def build_kasir_screen(page: ft.Page, user: dict) -> ft.Container:
         else:
             load_products(keyword)
             
-        search_input.current.focus()
+        page.run_task(search_input.current.focus)
         page.update()
 
     def add_to_cart(product: dict):
@@ -184,7 +184,7 @@ def build_kasir_screen(page: ft.Page, user: dict) -> ft.Container:
         total_text.current.value = format_rupiah(totals["total"])
         
         if search_input.current:
-            search_input.current.focus()
+            page.run_task(search_input.current.focus)
             
         page.update()
         

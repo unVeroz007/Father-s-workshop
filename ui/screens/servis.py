@@ -335,6 +335,26 @@ def build_servis_screen(page: ft.Page, user: dict) -> ft.Container:
             disabled=not bool(next_status),
             expand=True
         )
+        
+        def _handle_wa(e):
+            hp = data.get('customer_hp')
+            if not hp or hp == '-':
+                show_error_snackbar(page, "Nomor HP pelanggan tidak tersedia!")
+                return
+            msg = f"Halo {data.get('customer_nama')}, servis perangkat {data.get('device_merk')} Anda (Keluhan: {data.get('keluhan')}) telah SELESAI. Total biaya: {format_rupiah(data.get('total_biaya', 0))}. Silakan diambil di Toko Ayah."
+            show_success_snackbar(page, "Membuka WhatsApp, mohon tunggu beberapa detik...")
+            page.update()
+            import threading
+            def send():
+                success, response = send_wa_notification(hp, msg)
+            threading.Thread(target=send, daemon=True).start()
+
+        wa_button = outline_button(
+            text="Kirim Notifikasi WA",
+            icon=ft.Icons.CHAT_ROUNDED,
+            on_click=_handle_wa,
+            disabled=(data['status'] != 'Selesai')
+        )
                 
         detail_panel.current.content = ft.Column(
             controls=[
@@ -393,26 +413,6 @@ def build_servis_screen(page: ft.Page, user: dict) -> ft.Container:
                 ft.Container(expand=True), # Spacer
                 
                 # Aksi Status & WA
-                def _handle_wa(e):
-                    hp = data.get('customer_hp')
-                    if not hp or hp == '-':
-                        show_error_snackbar(page, "Nomor HP pelanggan tidak tersedia!")
-                        return
-                    msg = f"Halo {data.get('customer_nama')}, servis perangkat {data.get('device_merk')} Anda (Keluhan: {data.get('keluhan')}) telah SELESAI. Total biaya: {format_rupiah(data.get('total_biaya', 0))}. Silakan diambil di Toko Ayah."
-                    show_success_snackbar(page, "Membuka WhatsApp, mohon tunggu beberapa detik...")
-                    page.update()
-                    import threading
-                    def send():
-                        success, response = send_wa_notification(hp, msg)
-                    threading.Thread(target=send, daemon=True).start()
-
-                wa_button = outline_button(
-                    text="Kirim Notifikasi WA",
-                    icon=ft.Icons.CHAT_ROUNDED,
-                    on_click=_handle_wa,
-                    disabled=(data['status'] != 'Selesai')
-                )
-                
                 ft.Row(
                     controls=[btn_update, wa_button],
                 )

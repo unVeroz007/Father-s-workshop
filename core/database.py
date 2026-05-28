@@ -714,6 +714,18 @@ def get_sale_by_id(sale_id: int) -> Optional[dict]:
     return sale
 
 
+def get_all_sales() -> list[dict]:
+    """Ambil semua data transaksi penjualan (untuk laporan)."""
+    return execute_query(
+        """SELECT s.*, c.nama as customer_nama, u.username
+           FROM sales s
+           LEFT JOIN customers c ON s.customer_id = c.id
+           LEFT JOIN users u ON s.user_id = u.id
+           ORDER BY s.created_at DESC""",
+        fetch_all=True
+    )
+
+
 def get_sales_today() -> list[dict]:
     """Ambil semua transaksi hari ini."""
     return execute_query(

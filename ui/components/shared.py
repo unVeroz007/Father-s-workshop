@@ -460,7 +460,8 @@ def create_sidebar(
         {"icon": ft.Icons.POINT_OF_SALE_ROUNDED, "label": "Kasir", "index": 1},
         {"icon": ft.Icons.BUILD_ROUNDED, "label": "Servis", "index": 2},
         {"icon": ft.Icons.ASSESSMENT_ROUNDED, "label": "Laporan", "index": 3},
-        {"icon": ft.Icons.SETTINGS_ROUNDED, "label": "Pengaturan", "index": 4},
+        {"icon": ft.Icons.INVENTORY_ROUNDED, "label": "Data Produk", "index": 4},
+        {"icon": ft.Icons.SETTINGS_ROUNDED, "label": "Pengaturan", "index": 5},
     ]
 
     def create_menu_item(item: dict) -> ft.Container:
