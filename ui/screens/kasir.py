@@ -13,8 +13,8 @@ from core.models import CartItem, MetodeBayar
 from core.services import (
     search_product, process_sale, calculate_cart_total
 )
-from core.database import get_product_by_id
-from core.utils import format_rupiah
+from core.database import get_product_by_id, get_sale_by_id
+from core.utils import format_rupiah, print_struk
 from ui.components.shared import (
     PRIMARY_GREEN, PRIMARY_BLUE, WHITE, TEXT_PRIMARY, TEXT_SECONDARY,
     LIGHT_GRAY, MEDIUM_GRAY, LIGHT_GREEN, STATUS_RED, FONT_BODY, FONT_TITLE, FONT_LARGE, FONT_SMALL,
@@ -201,21 +201,26 @@ def build_kasir_screen(page: ft.Page, user: dict) -> ft.Container:
             
         def _confirm_checkout(e):
             metode = payment_dropdown.current.value
+            totals = calculate_cart_total(cart_items)
             
-            success, message, sale_id = process_sale(
-                cart_items=cart_items,
-                user_id=user.get("id") if user else None,
+            success, msg, sale_id = process_sale(
+                items=cart_items,
+                total=totals["total"],
+                customer_id=None,
+                user_id=user.get('id'),
                 metode_bayar=metode
             )
             
             if success:
-                show_success_snackbar(page, "Berhasil! Transaksi selesai.")
+                sale_data = get_sale_by_id(sale_id)
+                print_struk(sale_data) # Simpan struk otomatis
+                show_success_snackbar(page, f"{msg}. Struk tersimpan di data/export/")
                 cart_items.clear()
-                search_input.current.value = ""
-                load_products()  # Refresh stok di kiri
                 _update_cart_ui()
+                page.update()
+                load_products()
             else:
-                show_error_snackbar(page, message)
+                show_error_snackbar(page, msg)
                 
         # Konfirmasi Transaksi
         totals = calculate_cart_total(cart_items)

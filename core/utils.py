@@ -223,3 +223,53 @@ def send_wa_notification(phone: str, message: str) -> tuple[bool, str]:
         return True, f"Pesan berhasil dikirim ke {phone}"
     except Exception as e:
         return False, f"Gagal kirim WA: {str(e)}"
+
+# ==============================================================================
+# Cetak Struk (Thermal / Txt)
+# ==============================================================================
+def print_struk(sale_data: dict, file_name: str = None) -> tuple[bool, str]:
+    """
+    Cetak struk ke file teks (.txt) dengan format thermal printer 58mm.
+    """
+    try:
+        os.makedirs(EXPORT_DIR, exist_ok=True)
+        if not file_name:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            file_name = f"Struk_{sale_data['id']}_{timestamp}.txt"
+            
+        filepath = os.path.join(EXPORT_DIR, file_name)
+        
+        lines = []
+        lines.append("="*32)
+        lines.append("          TOKO AYAH           ")
+        lines.append("     Elektronik & Servis      ")
+        lines.append("="*32)
+        lines.append(f"No  : TRX-{sale_data['id']}")
+        lines.append(f"Tgl : {format_datetime(sale_data['created_at'])}")
+        lines.append(f"Kasir: {sale_data.get('username', 'Admin')}")
+        lines.append("-" * 32)
+        
+        for item in sale_data.get('items', []):
+            lines.append(f"{item.get('product_nama', 'Item')}")
+            harga = format_rupiah(item['harga_satuan'])
+            sub = format_rupiah(item['subtotal'])
+            lines.append(f" {item['qty']} x {harga}".ljust(18) + f"{sub}".rjust(14))
+            
+        lines.append("-" * 32)
+        lines.append(f"TOTAL".ljust(15) + f"{format_rupiah(sale_data['total'])}".rjust(17))
+        lines.append(f"BAYAR".ljust(15) + f"{sale_data.get('metode_bayar', 'Tunai')}".rjust(17))
+        lines.append("-" * 32)
+        lines.append("     Terima Kasih Atas      ")
+        lines.append("      Kunjungan Anda!       ")
+        lines.append("="*32)
+        lines.append("\n\n")
+        
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
+            
+        # Jika di Windows, ini bisa langsung dikirim ke printer menggunakan perintah print
+        # os.system(f"notepad /P {filepath}")
+        
+        return True, f"Struk tersimpan: {file_name}"
+    except Exception as e:
+        return False, f"Gagal cetak struk: {str(e)}"
