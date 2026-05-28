@@ -171,14 +171,23 @@ def export_to_excel(data: list[dict], filename: str, sheet_name: str = "Data") -
     """
     try:
         os.makedirs(EXPORT_DIR, exist_ok=True)
-        filepath = os.path.join(EXPORT_DIR, filename)
+        # Tambahkan timestamp agar unik
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        base, ext = os.path.splitext(filename)
+        actual_filename = f"{base}_{timestamp}{ext}"
+        filepath = os.path.join(EXPORT_DIR, actual_filename)
         
-        # Placeholder - akan diimplementasikan penuh di Langkah 4
         import pandas as pd
         df = pd.DataFrame(data)
+        
+        # Format kolom datetime ke string timezone-naive untuk openpyxl
+        for col in df.columns:
+            if pd.api.types.is_datetime64_any_dtype(df[col]):
+                df[col] = df[col].dt.tz_localize(None).astype(str)
+                
         df.to_excel(filepath, sheet_name=sheet_name, index=False)
         
-        return True, f"Data berhasil di-export: {filename}"
+        return True, f"Data berhasil di-export ke {filepath}"
     except ImportError:
         return False, "Library pandas belum terinstall. Jalankan: pip install pandas openpyxl"
     except Exception as e:
@@ -194,9 +203,23 @@ def send_wa_notification(phone: str, message: str) -> tuple[bool, str]:
     Implementasi lengkap di Langkah 4 menggunakan pywhatkit.
     """
     try:
-        # Placeholder - implementasi lengkap di Langkah 4
-        # import pywhatkit
-        # pywhatkit.sendwhatmsg_instantly(phone, message)
-        return True, f"Pesan akan dikirim ke {phone}"
+        import pywhatkit
+        import time
+        # Membersihkan nomor telepon, misal: 0812... menjadi +62812...
+        phone = phone.strip()
+        if phone.startswith("0"):
+            phone = "+62" + phone[1:]
+        elif phone.startswith("8"):
+            phone = "+62" + phone
+            
+        # Menggunakan sendwhatmsg_instantly agar tidak perlu menentukan jam/menit
+        pywhatkit.sendwhatmsg_instantly(
+            phone_no=phone, 
+            message=message, 
+            wait_time=15, 
+            tab_close=True, 
+            close_time=5
+        )
+        return True, f"Pesan berhasil dikirim ke {phone}"
     except Exception as e:
         return False, f"Gagal kirim WA: {str(e)}"

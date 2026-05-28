@@ -15,7 +15,7 @@ from core.services import (
     create_service_order, advance_repair_status, add_part_to_repair, add_new_customer
 )
 from core.models import RepairStatus
-from core.utils import format_rupiah
+from core.utils import format_rupiah, send_wa_notification
 from ui.components.shared import (
     PRIMARY_GREEN, PRIMARY_BLUE, WHITE, TEXT_PRIMARY, TEXT_SECONDARY,
     LIGHT_GRAY, MEDIUM_GRAY, LIGHT_GREEN, STATUS_RED, FONT_BODY, FONT_TITLE, FONT_LARGE, FONT_SMALL,
@@ -146,7 +146,7 @@ def build_servis_screen(page: ft.Page, user: dict) -> ft.Container:
                             ref=form_customer_dropdown,
                             options=options,
                             hint_text="Pilih Pelanggan",
-                            on_change=on_dropdown_change,
+                            on_select=on_dropdown_change,
                         ),
                         big_text_field(label="Nama Pelanggan Baru", ref=form_new_customer_name),
                         ft.Divider(),
@@ -167,11 +167,8 @@ def build_servis_screen(page: ft.Page, user: dict) -> ft.Container:
             actions_padding=ft.Padding.all(20),
         )
         
-        # Sembunyikan field new customer default
-        form_new_customer_name.current = ft.TextField(visible=False, label="Nama Pelanggan Baru")
-        dialog.content.content.controls[2] = form_new_customer_name.current
-        
         page.overlay.append(dialog)
+        form_new_customer_name.current.visible = False
         dialog.open = True
         page.update()
 
@@ -395,9 +392,29 @@ def build_servis_screen(page: ft.Page, user: dict) -> ft.Container:
                 
                 ft.Container(expand=True), # Spacer
                 
-                # Aksi Status
+                # Aksi Status & WA
+                def _handle_wa(e):
+                    hp = data.get('customer_hp')
+                    if not hp or hp == '-':
+                        show_error_snackbar(page, "Nomor HP pelanggan tidak tersedia!")
+                        return
+                    msg = f"Halo {data.get('customer_nama')}, servis perangkat {data.get('device_merk')} Anda (Keluhan: {data.get('keluhan')}) telah SELESAI. Total biaya: {format_rupiah(data.get('total_biaya', 0))}. Silakan diambil di Toko Ayah."
+                    show_success_snackbar(page, "Membuka WhatsApp, mohon tunggu beberapa detik...")
+                    page.update()
+                    import threading
+                    def send():
+                        success, response = send_wa_notification(hp, msg)
+                    threading.Thread(target=send, daemon=True).start()
+
+                wa_button = outline_button(
+                    text="Kirim Notifikasi WA",
+                    icon=ft.Icons.CHAT_ROUNDED,
+                    on_click=_handle_wa,
+                    disabled=(data['status'] != 'Selesai')
+                )
+                
                 ft.Row(
-                    controls=[btn_update],
+                    controls=[btn_update, wa_button],
                 )
             ],
             expand=True,
