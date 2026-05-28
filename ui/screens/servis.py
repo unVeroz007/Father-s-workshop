@@ -71,6 +71,7 @@ def build_servis_screen(page: ft.Page, user: dict) -> ft.Container:
         selected_order_id = order_id
         try:
             selected_order_data = get_repair_order_by_id(order_id)
+            _render_orders_list()
             _render_detail_panel()
         except Exception as e:
             show_error_snackbar(page, f"Gagal memuat detail servis: {e}")

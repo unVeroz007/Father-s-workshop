@@ -334,34 +334,46 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
     # ============================================================
     # TABS LAYOUT
     # ============================================================
-    tabs = ft.Tabs(
-        selected_index=0,
-        animation_duration=300,
-        tabs=[
-            ft.Tab(
-                text="Data Produk",
-                icon=ft.Icons.INVENTORY_ROUNDED,
-                content=_build_produk_tab()
-            ),
-            ft.Tab(
-                text="Data Sparepart",
-                icon=ft.Icons.HANDYMAN_ROUNDED,
-                content=_build_sparepart_tab()
-            ),
-            ft.Tab(
-                text="Data Pelanggan",
-                icon=ft.Icons.PEOPLE_ROUNDED,
-                content=_build_pelanggan_tab()
-            ),
+    # ============================================================
+    # TABS LAYOUT (CUSTOM)
+    # ============================================================
+    tab_content = ft.Container(expand=1)
+    
+    def switch_tab(e, index: int):
+        # Update tab content
+        if index == 0:
+            tab_content.content = _build_produk_tab()
+        elif index == 1:
+            tab_content.content = _build_sparepart_tab()
+        elif index == 2:
+            tab_content.content = _build_pelanggan_tab()
+            
+        # Update buttons styling
+        for idx, btn in enumerate(tab_buttons.controls):
+            btn.style.bgcolor = PRIMARY_GREEN if idx == index else LIGHT_GRAY
+            btn.style.color = WHITE if idx == index else TEXT_PRIMARY
+            
+        page.update()
+
+    tab_buttons = ft.Row(
+        controls=[
+            ft.ElevatedButton("Data Produk", icon=ft.Icons.INVENTORY_ROUNDED, on_click=lambda e: switch_tab(e, 0), style=ft.ButtonStyle(bgcolor=PRIMARY_GREEN, color=WHITE, shape=ft.RoundedRectangleBorder(radius=8))),
+            ft.ElevatedButton("Data Sparepart", icon=ft.Icons.HANDYMAN_ROUNDED, on_click=lambda e: switch_tab(e, 1), style=ft.ButtonStyle(bgcolor=LIGHT_GRAY, color=TEXT_PRIMARY, shape=ft.RoundedRectangleBorder(radius=8))),
+            ft.ElevatedButton("Data Pelanggan", icon=ft.Icons.PEOPLE_ROUNDED, on_click=lambda e: switch_tab(e, 2), style=ft.ButtonStyle(bgcolor=LIGHT_GRAY, color=TEXT_PRIMARY, shape=ft.RoundedRectangleBorder(radius=8))),
         ],
-        expand=1,
+        spacing=10
     )
+    
+    # Init default tab
+    switch_tab(None, 0)
 
     content = ft.Column(
         controls=[
             section_header("Data Master", ft.Icons.FOLDER_SPECIAL_ROUNDED),
+            ft.Container(height=16),
+            tab_buttons,
             ft.Container(height=8),
-            tabs
+            tab_content
         ],
         expand=True,
     )
