@@ -201,11 +201,8 @@ def build_kasir_screen(page: ft.Page, user: dict) -> ft.Container:
             
         def _confirm_checkout(e):
             metode = payment_dropdown.current.value
-            totals = calculate_cart_total(cart_items)
-            
             success, msg, sale_id = process_sale(
-                items=cart_items,
-                total=totals["total"],
+                cart_items=cart_items,
                 customer_id=None,
                 user_id=user.get('id'),
                 metode_bayar=metode

@@ -84,17 +84,19 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
                     show_error_snackbar(page, "Input angka tidak valid!")
                     return
                 
-                if is_edit:
-                    success, msg = update_product(product['id'], nama=nama, kode=kode, harga_beli=hb, harga_jual=hj, stok=st)
-                else:
-                    success, msg, _ = add_product(nama=nama, kode=kode, harga_beli=hb, harga_jual=hj, stok=st)
-                
-                if success:
+                try:
+                    if is_edit:
+                        update_product(product['id'], nama=nama, kode=kode, harga_beli=hb, harga_jual=hj, stok=st)
+                        msg = "Produk berhasil diupdate"
+                    else:
+                        add_product(nama=nama, kode=kode, harga_beli=hb, harga_jual=hj, stok=st)
+                        msg = "Produk berhasil ditambahkan"
+                    
                     show_success_snackbar(page, msg)
                     dialog.open = False
                     load_data(search_input.current.value)
-                else:
-                    show_error_snackbar(page, msg)
+                except Exception as ex:
+                    show_error_snackbar(page, f"Gagal: {str(ex)}")
 
             dialog = ft.AlertDialog(
                 modal=True,
@@ -122,10 +124,12 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
 
         def handle_delete(p):
             def _confirm(e):
-                success, msg = delete_product(p['id'])
-                if success:
-                    show_success_snackbar(page, msg)
+                try:
+                    delete_product(p['id'])
+                    show_success_snackbar(page, "Produk berhasil dihapus")
                     load_data(search_input.current.value)
+                except Exception as ex:
+                    show_error_snackbar(page, f"Gagal menghapus: {str(ex)}")
             show_confirmation_dialog(page, "Hapus?", f"Hapus {p['nama']}?", _confirm, confirm_color=STATUS_RED)
 
         layout = ft.Container(
@@ -190,13 +194,19 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
                 except:
                     show_error_snackbar(page, "Angka tidak valid")
                     return
-                if is_edit:
-                    success, msg = update_spare_part(part['id'], nama=form_nama.current.value, harga=hj, stok=st)
-                else:
-                    success, msg, _ = add_spare_part(nama=form_nama.current.value, harga=hj, stok=st)
-                if success:
+                try:
+                    if is_edit:
+                        update_spare_part(part['id'], nama=form_nama.current.value, harga=hj, stok=st)
+                        msg = "Sparepart berhasil diupdate"
+                    else:
+                        add_spare_part(nama=form_nama.current.value, harga=hj, stok=st)
+                        msg = "Sparepart berhasil ditambahkan"
+                    
+                    show_success_snackbar(page, msg)
                     dialog.open = False
                     load_data(search_input.current.value)
+                except Exception as ex:
+                    show_error_snackbar(page, f"Gagal: {str(ex)}")
             
             dialog = ft.AlertDialog(
                 modal=True,
@@ -220,8 +230,12 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
 
         def handle_delete(p):
             def _c(e):
-                delete_spare_part(p['id'])
-                load_data(search_input.current.value)
+                try:
+                    delete_spare_part(p['id'])
+                    show_success_snackbar(page, "Sparepart dihapus")
+                    load_data(search_input.current.value)
+                except Exception as ex:
+                    show_error_snackbar(page, str(ex))
             show_confirmation_dialog(page, "Hapus?", f"Hapus {p['nama']}?", _c, confirm_color=STATUS_RED)
 
         layout = ft.Container(
@@ -279,13 +293,19 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
         def open_form(cust=None):
             is_edit = cust is not None
             def submit(e):
-                if is_edit:
-                    success, msg = update_customer(cust['id'], nama=form_nama.current.value, no_hp=form_hp.current.value, alamat=form_alamat.current.value)
-                else:
-                    success, msg, _ = add_customer(nama=form_nama.current.value, no_hp=form_hp.current.value, alamat=form_alamat.current.value)
-                if success:
+                try:
+                    if is_edit:
+                        update_customer(cust['id'], nama=form_nama.current.value, no_hp=form_hp.current.value, alamat=form_alamat.current.value)
+                        msg = "Pelanggan diupdate"
+                    else:
+                        add_customer(nama=form_nama.current.value, no_hp=form_hp.current.value, alamat=form_alamat.current.value)
+                        msg = "Pelanggan ditambahkan"
+                        
+                    show_success_snackbar(page, msg)
                     dialog.open = False
                     load_data(search_input.current.value)
+                except Exception as ex:
+                    show_error_snackbar(page, f"Gagal: {str(ex)}")
             
             dialog = ft.AlertDialog(
                 modal=True,
@@ -309,8 +329,12 @@ def build_master_screen(page: ft.Page, user: dict) -> ft.Container:
 
         def handle_delete(p):
             def _c(e):
-                delete_customer(p['id'])
-                load_data(search_input.current.value)
+                try:
+                    delete_customer(p['id'])
+                    show_success_snackbar(page, "Pelanggan dihapus")
+                    load_data(search_input.current.value)
+                except Exception as ex:
+                    show_error_snackbar(page, str(ex))
             show_confirmation_dialog(page, "Hapus?", f"Hapus {p['nama']}?", _c, confirm_color=STATUS_RED)
 
         layout = ft.Container(
